@@ -20,6 +20,8 @@ public class SunSpaceArcade extends Game {
 
 	ScreenMenu screenMenu;
 	ScreenSettings screenSettings;
+	ScreenAbout screenAbout;
+	ScreenGame screenGame;
 	
 	@Override
 	public void create () {
@@ -31,6 +33,8 @@ public class SunSpaceArcade extends Game {
 
 		screenMenu = new ScreenMenu(this);
 		screenSettings = new ScreenSettings(this);
+		screenAbout = new ScreenAbout(this);
+		screenGame = new ScreenGame(this);
 		setScreen(screenMenu);
 	}
 	

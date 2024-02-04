@@ -1,5 +1,8 @@
 package com.mygdx.sunspacearcade;
 
+import static com.mygdx.sunspacearcade.SunSpaceArcade.SCR_HEIGHT;
+import static com.mygdx.sunspacearcade.SunSpaceArcade.SCR_WIDTH;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -16,7 +19,7 @@ public class ScreenSettings implements Screen {
     Vector3 touch;
     BitmapFont font;
 
-    Texture img;
+    Texture imgBackGround;
 
     SpaceButton btnName;
     SpaceButton btnSound;
@@ -30,7 +33,8 @@ public class ScreenSettings implements Screen {
         touch = sunSpaceArcade.touch;
         font = sunSpaceArcade.font;
 
-        img = new Texture("badlogic.jpg");
+        imgBackGround = new Texture("space1.png");
+
         btnName = new SpaceButton("Name", 300, 1000, font);
         btnSound = new SpaceButton("Sound ON", 300, 850, font);
         btnMusic = new SpaceButton("Music ON", 300, 700, font);
@@ -66,10 +70,9 @@ public class ScreenSettings implements Screen {
         // события
 
         // отрисовка
-        ScreenUtils.clear(0, 0, 0.5f, 1);
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
-        batch.draw(img, 0, 0);
+        batch.draw(imgBackGround, 0, 0, SCR_WIDTH, SCR_HEIGHT);
         font.draw(batch, btnName.text, btnName.x, btnName.y);
         font.draw(batch, btnSound.text, btnSound.x, btnSound.y);
         font.draw(batch, btnMusic.text, btnMusic.x, btnMusic.y);
@@ -99,6 +102,6 @@ public class ScreenSettings implements Screen {
 
     @Override
     public void dispose() {
-        img.dispose();
+        imgBackGround.dispose();
     }
 }
