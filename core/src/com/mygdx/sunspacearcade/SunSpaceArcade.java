@@ -2,6 +2,7 @@ package com.mygdx.sunspacearcade;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -26,7 +27,7 @@ public class SunSpaceArcade extends Game {
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, SCR_WIDTH, SCR_HEIGHT);
 		touch = new Vector3();
-		font = new BitmapFont();
+		font = new BitmapFont(Gdx.files.internal("catorze.fnt"));
 
 		screenMenu = new ScreenMenu(this);
 		screenSettings = new ScreenSettings(this);

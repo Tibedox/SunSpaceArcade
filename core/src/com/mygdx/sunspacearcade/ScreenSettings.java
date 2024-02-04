@@ -1,5 +1,6 @@
 package com.mygdx.sunspacearcade;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -17,6 +18,11 @@ public class ScreenSettings implements Screen {
 
     Texture img;
 
+    SpaceButton btnName;
+    SpaceButton btnSound;
+    SpaceButton btnMusic;
+    SpaceButton btnBack;
+
     public ScreenSettings(SunSpaceArcade sunSpaceArcade) {
         this.sunSpaceArcade = sunSpaceArcade;
         batch = sunSpaceArcade.batch;
@@ -25,6 +31,10 @@ public class ScreenSettings implements Screen {
         font = sunSpaceArcade.font;
 
         img = new Texture("badlogic.jpg");
+        btnName = new SpaceButton("Name", 300, 1000, font);
+        btnSound = new SpaceButton("Sound ON", 300, 850, font);
+        btnMusic = new SpaceButton("Music ON", 300, 700, font);
+        btnBack = new SpaceButton("Back", 300, 550, font);
     }
 
     @Override
@@ -34,10 +44,36 @@ public class ScreenSettings implements Screen {
 
     @Override
     public void render(float delta) {
+        // касания
+        if(Gdx.input.justTouched()){
+            touch.set(Gdx.input.getX(), Gdx.input.getY(), 0);
+            camera.unproject(touch);
+
+            if(btnName.hit(touch.x, touch.y)){
+                //sunSpaceArcade.setScreen(sunSpaceArcade.screenSettings);
+            }
+            if(btnSound.hit(touch.x, touch.y)){
+                //sunSpaceArcade.setScreen(sunSpaceArcade.screenSettings);
+            }
+            if(btnMusic.hit(touch.x, touch.y)){
+                //sunSpaceArcade.setScreen(sunSpaceArcade.screenSettings);
+            }
+            if(btnBack.hit(touch.x, touch.y)){
+                sunSpaceArcade.setScreen(sunSpaceArcade.screenMenu);
+            }
+        }
+
+        // события
+
+        // отрисовка
         ScreenUtils.clear(0, 0, 0.5f, 1);
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
         batch.draw(img, 0, 0);
+        font.draw(batch, btnName.text, btnName.x, btnName.y);
+        font.draw(batch, btnSound.text, btnSound.x, btnSound.y);
+        font.draw(batch, btnMusic.text, btnMusic.x, btnMusic.y);
+        font.draw(batch, btnBack.text, btnBack.x, btnBack.y);
         batch.end();
     }
 
