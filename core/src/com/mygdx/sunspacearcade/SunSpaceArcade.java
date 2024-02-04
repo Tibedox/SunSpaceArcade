@@ -1,40 +1,41 @@
 package com.mygdx.sunspacearcade;
 
 import com.badlogic.gdx.ApplicationAdapter;
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
 
-public class SunSpaceArcade extends ApplicationAdapter {
+public class SunSpaceArcade extends Game {
 	public static final float SCR_WIDTH = 900, SCR_HEIGHT = 1600;
 
 	SpriteBatch batch;
 	OrthographicCamera camera;
+	Vector3 touch;
+	BitmapFont font;
 
-	Texture img;
+	ScreenMenu screenMenu;
+	ScreenSettings screenSettings;
 	
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, SCR_WIDTH, SCR_HEIGHT);
+		touch = new Vector3();
+		font = new BitmapFont();
 
-		img = new Texture("badlogic.jpg");
-	}
-
-	@Override
-	public void render () {
-		ScreenUtils.clear(1, 0, 0, 1);
-		batch.setProjectionMatrix(camera.combined);
-		batch.begin();
-		batch.draw(img, 0, 0);
-		batch.end();
+		screenMenu = new ScreenMenu(this);
+		screenSettings = new ScreenSettings(this);
+		setScreen(screenMenu);
 	}
 	
 	@Override
 	public void dispose () {
 		batch.dispose();
-		img.dispose();
+		font.dispose();
 	}
 }
