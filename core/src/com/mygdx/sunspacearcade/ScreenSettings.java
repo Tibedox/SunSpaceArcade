@@ -33,7 +33,7 @@ public class ScreenSettings implements Screen {
         touch = sunSpaceArcade.touch;
         font = sunSpaceArcade.font;
 
-        imgBackGround = new Texture("space1.png");
+        imgBackGround = new Texture("space3.png");
 
         btnName = new SpaceButton("Name", 300, 1000, font);
         btnSound = new SpaceButton("Sound ON", 300, 850, font);

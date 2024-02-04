@@ -22,6 +22,8 @@ public class ScreenGame implements Screen {
 
     SpaceButton btnBack;
 
+    Stars[] stars = new Stars[2];
+
     public ScreenGame(SunSpaceArcade sunSpaceArcade) {
         this.sunSpaceArcade = sunSpaceArcade;
         batch = sunSpaceArcade.batch;
@@ -29,9 +31,12 @@ public class ScreenGame implements Screen {
         touch = sunSpaceArcade.touch;
         font = sunSpaceArcade.font;
 
-        imgBackGround = new Texture("space3.png");
+        imgBackGround = new Texture("space1.png");
 
         btnBack = new SpaceButton("x", SCR_WIDTH-50, SCR_HEIGHT, font);
+
+        stars[0] = new Stars(0);
+        stars[1] = new Stars(SCR_HEIGHT);
     }
 
     @Override
@@ -52,11 +57,16 @@ public class ScreenGame implements Screen {
         }
 
         // события
+        for (int i = 0; i < stars.length; i++) {
+            stars[i].move();
+        }
 
         // отрисовка
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
-        batch.draw(imgBackGround, 0, 0, SCR_WIDTH, SCR_HEIGHT);
+        for (int i = 0; i < stars.length; i++) {
+            batch.draw(imgBackGround, stars[i].x, stars[i].y, stars[i].width, stars[i].height);
+        }
         font.draw(batch, btnBack.text, btnBack.x, btnBack.y);
         batch.end();
     }
