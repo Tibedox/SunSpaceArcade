@@ -5,6 +5,7 @@ import static com.mygdx.sunspacearcade.SunSpaceArcade.SCR_WIDTH;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -26,6 +27,8 @@ public class ScreenGame implements Screen {
     TextureRegion[] imgShip = new TextureRegion[12];
     TextureRegion[] imgEnemy = new TextureRegion[12];
     Texture imgShot;
+    Sound sndShot;
+    Sound sndExplosion;
 
     SpaceButton btnBack;
 
@@ -42,6 +45,9 @@ public class ScreenGame implements Screen {
         camera = sunSpaceArcade.camera;
         touch = sunSpaceArcade.touch;
         font = sunSpaceArcade.font;
+
+        sndShot = Gdx.audio.newSound(Gdx.files.internal("blaster.wav"));
+        sndExplosion = Gdx.audio.newSound(Gdx.files.internal("explosion.wav"));
 
         imgBackGround = new Texture("space1.png");
         imgShipsAtlas = new Texture("ships_atlas3.png");
@@ -114,6 +120,7 @@ public class ScreenGame implements Screen {
                 if (shots.get(i).overlap(enemies.get(j))){
                     shots.removeIndex(i);
                     enemies.removeIndex(j);
+                    sndExplosion.play();
                     break;
                 }
             }
@@ -168,6 +175,7 @@ public class ScreenGame implements Screen {
         if(TimeUtils.millis() > timeLastShot+timeShotInterval) {
             shots.add(new Shot(ship));
             timeLastShot = TimeUtils.millis();
+            sndShot.play(0.05f);
         }
     }
 
