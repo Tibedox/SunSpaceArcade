@@ -1,16 +1,25 @@
 package com.mygdx.sunspacearcade;
 
 import static com.mygdx.sunspacearcade.SunSpaceArcade.SCR_HEIGHT;
+import static com.mygdx.sunspacearcade.SunSpaceArcade.SCR_WIDTH;
+
+import com.badlogic.gdx.math.MathUtils;
 
 public class Enemy extends SpaceObject{
-    public Enemy(Ship ship) {
+    public Enemy() {
         width = height = 200;
-        x = ship.x;
-        y = ship.y;
-        vy = 12;
+        x = MathUtils.random(width/2, SCR_WIDTH-width/2);
+        y = MathUtils.random(SCR_HEIGHT+height, SCR_HEIGHT*2);
+        vy = MathUtils.random(-7f, -4f);
+    }
+
+    @Override
+    void move() {
+        super.move();
+        changePhase();
     }
 
     boolean outOfScreen() {
-        return y > SCR_HEIGHT+height/2;
+        return y < -height/2;
     }
 }

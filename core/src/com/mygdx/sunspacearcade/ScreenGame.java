@@ -24,6 +24,7 @@ public class ScreenGame implements Screen {
     Texture imgBackGround;
     Texture imgShipsAtlas;
     TextureRegion[] imgShip = new TextureRegion[12];
+    TextureRegion[] imgEnemy = new TextureRegion[12];
     Texture imgShot;
 
     SpaceButton btnBack;
@@ -31,7 +32,9 @@ public class ScreenGame implements Screen {
     Stars[] stars = new Stars[2];
     Ship ship;
     Array<Shot> shots = new Array<>();
+    Array<Enemy> enemies = new Array<>();
     long timeLastShot, timeShotInterval = 700;
+    long timeLastEnemy, timeEnemyInterval = 1500;
 
     public ScreenGame(SunSpaceArcade sunSpaceArcade) {
         this.sunSpaceArcade = sunSpaceArcade;
@@ -48,6 +51,13 @@ public class ScreenGame implements Screen {
                 imgShip[i] = new TextureRegion(imgShipsAtlas, i * 400, 0, 400, 400);
             } else {
                 imgShip[i] = new TextureRegion(imgShipsAtlas, (12-i) * 400, 0, 400, 400);
+            }
+        }
+        for (int i = 0; i < 12; i++) {
+            if(i<7) {
+                imgEnemy[i] = new TextureRegion(imgShipsAtlas, i * 400, 1600, 400, 400);
+            } else {
+                imgEnemy[i] = new TextureRegion(imgShipsAtlas, (12-i) * 400, 1600, 400, 400);
             }
         }
 
@@ -86,11 +96,26 @@ public class ScreenGame implements Screen {
         for (int i = 0; i < stars.length; i++) {
             stars[i].move();
         }
+        spawnEnemies();
+        for (int i = 0; i < enemies.size; i++) {
+            enemies.get(i).move();
+            if (enemies.get(i).outOfScreen()){
+                enemies.removeIndex(i);
+            }
+        }
         spawnShots();
         for (int i = 0; i < shots.size; i++) {
             shots.get(i).move();
             if (shots.get(i).outOfScreen()){
                 shots.removeIndex(i);
+                continue;
+            }
+            for (int j = 0; j < enemies.size; j++) {
+                if (shots.get(i).overlap(enemies.get(j))){
+                    shots.removeIndex(i);
+                    enemies.removeIndex(j);
+                    break;
+                }
             }
         }
         ship.move();
@@ -102,6 +127,9 @@ public class ScreenGame implements Screen {
             batch.draw(imgBackGround, stars[i].x, stars[i].y, stars[i].width, stars[i].height);
         }
         font.draw(batch, btnBack.text, btnBack.x, btnBack.y);
+        for (Enemy s: enemies) {
+            batch.draw(imgEnemy[s.phase], s.getX(), s.getY(), s.width, s.height);
+        }
         for (Shot s: shots) {
             batch.draw(imgShot, s.getX(), s.getY(), s.width, s.height);
         }
@@ -140,6 +168,13 @@ public class ScreenGame implements Screen {
         if(TimeUtils.millis() > timeLastShot+timeShotInterval) {
             shots.add(new Shot(ship));
             timeLastShot = TimeUtils.millis();
+        }
+    }
+
+    void spawnEnemies(){
+        if(TimeUtils.millis() > timeLastEnemy+timeEnemyInterval) {
+            enemies.add(new Enemy());
+            timeLastEnemy = TimeUtils.millis();
         }
     }
 }

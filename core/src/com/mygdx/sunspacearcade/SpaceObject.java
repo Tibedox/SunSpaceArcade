@@ -29,4 +29,8 @@ public class SpaceObject {
             timeLastPhase = TimeUtils.millis();
         }
     }
+
+    boolean overlap(SpaceObject o){
+        return Math.abs(x-o.x) < width/3+o.width/3 & Math.abs(y-o.y) < height/3+o.height/3;
+    }
 }
