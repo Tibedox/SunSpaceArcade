@@ -11,6 +11,8 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.TimeUtils;
 
 public class ScreenGame implements Screen {
     SunSpaceArcade sunSpaceArcade;
@@ -21,12 +23,15 @@ public class ScreenGame implements Screen {
 
     Texture imgBackGround;
     Texture imgShipsAtlas;
-    TextureRegion imgShip;
+    TextureRegion[] imgShip = new TextureRegion[12];
+    Texture imgShot;
 
     SpaceButton btnBack;
 
     Stars[] stars = new Stars[2];
     Ship ship;
+    Array<Shot> shots = new Array<>();
+    long timeLastShot, timeShotInterval = 700;
 
     public ScreenGame(SunSpaceArcade sunSpaceArcade) {
         this.sunSpaceArcade = sunSpaceArcade;
@@ -37,7 +42,14 @@ public class ScreenGame implements Screen {
 
         imgBackGround = new Texture("space1.png");
         imgShipsAtlas = new Texture("ships_atlas3.png");
-        imgShip = new TextureRegion(imgShipsAtlas, 0, 0, 400, 400);
+        imgShot = new Texture("shoot_blaster_red.png");
+        for (int i = 0; i < 12; i++) {
+            if(i<7) {
+                imgShip[i] = new TextureRegion(imgShipsAtlas, i * 400, 0, 400, 400);
+            } else {
+                imgShip[i] = new TextureRegion(imgShipsAtlas, (12-i) * 400, 0, 400, 400);
+            }
+        }
 
         btnBack = new SpaceButton("x", SCR_WIDTH-50, SCR_HEIGHT, font);
 
@@ -67,12 +79,19 @@ public class ScreenGame implements Screen {
                 sunSpaceArcade.setScreen(sunSpaceArcade.screenMenu);
             }
 
-            ship.hit(touch.x);
+            ship.touchScreen(touch.x);
         }
 
         // события
         for (int i = 0; i < stars.length; i++) {
             stars[i].move();
+        }
+        spawnShots();
+        for (int i = 0; i < shots.size; i++) {
+            shots.get(i).move();
+            if (shots.get(i).outOfScreen()){
+                shots.removeIndex(i);
+            }
         }
         ship.move();
 
@@ -83,7 +102,10 @@ public class ScreenGame implements Screen {
             batch.draw(imgBackGround, stars[i].x, stars[i].y, stars[i].width, stars[i].height);
         }
         font.draw(batch, btnBack.text, btnBack.x, btnBack.y);
-        batch.draw(imgShip, ship.getX(), ship.getY(), ship.width, ship.height);
+        for (Shot s: shots) {
+            batch.draw(imgShot, s.getX(), s.getY(), s.width, s.height);
+        }
+        batch.draw(imgShip[ship.phase], ship.getX(), ship.getY(), ship.width, ship.height);
         batch.end();
     }
 
@@ -111,5 +133,13 @@ public class ScreenGame implements Screen {
     public void dispose() {
         imgBackGround.dispose();
         imgShipsAtlas.dispose();
+        imgShot.dispose();
+    }
+
+    void spawnShots(){
+        if(TimeUtils.millis() > timeLastShot+timeShotInterval) {
+            shots.add(new Shot(ship));
+            timeLastShot = TimeUtils.millis();
+        }
     }
 }

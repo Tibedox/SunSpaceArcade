@@ -15,6 +15,7 @@ public class Ship extends SpaceObject{
     void move() {
         super.move();
         outOfScreen();
+        changePhase();
     }
 
     void outOfScreen() {
@@ -28,7 +29,7 @@ public class Ship extends SpaceObject{
         }
     }
 
-    void hit(float tx) {
+    void touchScreen(float tx) {
         vx = (tx-x)/20;
     }
 }
