@@ -2,10 +2,12 @@ package com.mygdx.sunspacearcade;
 
 import static com.mygdx.sunspacearcade.SunSpaceArcade.SCR_HEIGHT;
 import static com.mygdx.sunspacearcade.SunSpaceArcade.SCR_WIDTH;
+import static com.mygdx.sunspacearcade.SunSpaceArcade.TYPE_SHIP;
 
 public class Ship extends SpaceObject{
 
     public Ship() {
+        type = TYPE_SHIP;
         width = height = 200;
         x = SCR_WIDTH/2;
         y = SCR_HEIGHT/12;

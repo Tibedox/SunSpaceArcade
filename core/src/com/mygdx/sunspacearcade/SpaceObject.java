@@ -3,6 +3,7 @@ package com.mygdx.sunspacearcade;
 import com.badlogic.gdx.utils.TimeUtils;
 
 public class SpaceObject {
+    int type;
     float x, y;
     float width, height;
     float vx, vy;
