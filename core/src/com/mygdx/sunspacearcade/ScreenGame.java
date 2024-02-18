@@ -136,6 +136,9 @@ public class ScreenGame implements Screen {
         }
         for (int i = 0; i < fragments.size; i++) {
             fragments.get(i).move();
+            if(fragments.get(i).outOfScreen()){
+                fragments.removeIndex(i);
+            }
         }
         ship.move();
 

@@ -1,5 +1,8 @@
 package com.mygdx.sunspacearcade;
 
+import static com.mygdx.sunspacearcade.SunSpaceArcade.SCR_HEIGHT;
+import static com.mygdx.sunspacearcade.SunSpaceArcade.SCR_WIDTH;
+
 import com.badlogic.gdx.math.MathUtils;
 
 public class Fragment extends SpaceObject{
@@ -25,5 +28,9 @@ public class Fragment extends SpaceObject{
     void move() {
         super.move();
         rotation += vRotation;
+    }
+
+    boolean outOfScreen() {
+        return y<-height/2 || y>SCR_HEIGHT+height/2 || x<-width/2 || x>SCR_WIDTH+width/2;
     }
 }
