@@ -36,7 +36,7 @@ public class ScreenGame implements Screen {
 
     Stars[] stars = new Stars[2];
     Ship ship;
-    int nShipLives = 1;
+    int nShipLives = 3;
     long timeShipKilled, timeShipRespawn = 3000;
     Array<Shot> shots = new Array<>();
     long timeLastShot, timeShotInterval = 700;
@@ -263,6 +263,7 @@ public class ScreenGame implements Screen {
 
     void gameStart(){
         isGameOver = false;
+        kills = 0;
         enemies.clear();
         shots.clear();
         fragments.clear();
