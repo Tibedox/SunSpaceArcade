@@ -32,6 +32,6 @@ public class SpaceObject {
     }
 
     boolean overlap(SpaceObject o){
-        return Math.abs(x-o.x) < width/3+o.width/3 & Math.abs(y-o.y) < height/3+o.height/3;
+        return Math.abs(x-o.x) < width/2+o.width/2 & Math.abs(y-o.y) < height/3+o.height/3;
     }
 }

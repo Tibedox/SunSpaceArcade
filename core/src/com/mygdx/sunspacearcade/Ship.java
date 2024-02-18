@@ -5,6 +5,8 @@ import static com.mygdx.sunspacearcade.SunSpaceArcade.SCR_WIDTH;
 import static com.mygdx.sunspacearcade.SunSpaceArcade.TYPE_SHIP;
 
 public class Ship extends SpaceObject{
+    int lives;
+    boolean isAlive = true;
 
     public Ship() {
         type = TYPE_SHIP;

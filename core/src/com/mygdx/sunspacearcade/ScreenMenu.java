@@ -10,7 +10,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.ScreenUtils;
 
 public class ScreenMenu implements Screen {
     SunSpaceArcade sunSpaceArcade;
@@ -31,7 +30,7 @@ public class ScreenMenu implements Screen {
         batch = sunSpaceArcade.batch;
         camera = sunSpaceArcade.camera;
         touch = sunSpaceArcade.touch;
-        font = sunSpaceArcade.font;
+        font = sunSpaceArcade.fontLarge;
 
         imgBackGround = new Texture("space0.png");
 
