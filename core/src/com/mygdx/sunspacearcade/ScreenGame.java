@@ -4,6 +4,7 @@ import static com.mygdx.sunspacearcade.SunSpaceArcade.SCR_HEIGHT;
 import static com.mygdx.sunspacearcade.SunSpaceArcade.SCR_WIDTH;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -94,6 +95,7 @@ public class ScreenGame implements Screen {
         for (int i = 0; i < players.length; i++) {
             players[i] = new Player("Noname", 0);
         }
+        loadRecords();
     }
 
     @Override
@@ -277,6 +279,7 @@ public class ScreenGame implements Screen {
         players[players.length-1].name = sunSpaceArcade.playerName;
         players[players.length-1].score = kills;
         sortRecords();
+        saveRecords();
     }
 
     private void gameStart(){
@@ -316,10 +319,19 @@ public class ScreenGame implements Screen {
     }
 
     private void saveRecords(){
-
+        Preferences prefs = Gdx.app.getPreferences("SunArcadeRecords");
+        for (int i = 0; i < players.length; i++) {
+            prefs.putString("name"+i, players[i].name);
+            prefs.putInteger("score"+i, players[i].score);
+        }
+        prefs.flush();
     }
 
     private void loadRecords(){
-
+        Preferences prefs = Gdx.app.getPreferences("SunArcadeRecords");
+        for (int i = 0; i < players.length; i++) {
+            if(prefs.contains("name"+i)) players[i].name = prefs.getString("name"+i);
+            if(prefs.contains("score"+i)) players[i].score = prefs.getInteger("score"+i);
+        }
     }
 }
