@@ -2,6 +2,7 @@ package com.mygdx.sunspacearcade;
 
 import static com.mygdx.sunspacearcade.SunSpaceArcade.SCR_HEIGHT;
 import static com.mygdx.sunspacearcade.SunSpaceArcade.SCR_WIDTH;
+import static com.mygdx.sunspacearcade.SunSpaceArcade.TYPE_SHIP;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
@@ -27,8 +28,8 @@ public class ScreenGame implements Screen {
 
     Texture imgBackGround;
     Texture imgShipsAtlas;
-    TextureRegion[] imgShip = new TextureRegion[12];
-    TextureRegion[] imgEnemy = new TextureRegion[12];
+    //TextureRegion[] imgShip = new TextureRegion[12];
+    TextureRegion[][] imgShip = new TextureRegion[5][12];
     TextureRegion[][] imgFragment = new TextureRegion[5][16];
     Texture imgShot;
     Sound sndShot;
@@ -38,7 +39,7 @@ public class ScreenGame implements Screen {
 
     Stars[] stars = new Stars[2];
     Ship ship;
-    int nShipLives = 1;
+    int nShipLives = 3;
     long timeShipKilled, timeShipRespawn = 3000;
     Array<Shot> shots = new Array<>();
     long timeLastShot, timeShotInterval = 700;
@@ -65,20 +66,16 @@ public class ScreenGame implements Screen {
         imgBackGround = new Texture("space1.png");
         imgShipsAtlas = new Texture("ships_atlas3.png");
         imgShot = new Texture("shoot_blaster_red.png");
-        for (int i = 0; i < 12; i++) {
-            if(i<7) {
-                imgShip[i] = new TextureRegion(imgShipsAtlas, i * 400, 0, 400, 400);
-            } else {
-                imgShip[i] = new TextureRegion(imgShipsAtlas, (12-i) * 400, 0, 400, 400);
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 12; j++) {
+                if (j < 7) {
+                    imgShip[i][j] = new TextureRegion(imgShipsAtlas, j * 400, i*400, 400, 400);
+                } else {
+                    imgShip[i][j] = new TextureRegion(imgShipsAtlas, (12 - j) * 400, i*400, 400, 400);
+                }
             }
         }
-        for (int i = 0; i < 12; i++) {
-            if(i<7) {
-                imgEnemy[i] = new TextureRegion(imgShipsAtlas, i * 400, 1600, 400, 400);
-            } else {
-                imgEnemy[i] = new TextureRegion(imgShipsAtlas, (12-i) * 400, 1600, 400, 400);
-            }
-        }
+
         for (int i = 0; i < imgFragment.length; i++) {
             for (int j = 0; j < imgFragment[i].length; j++) {
                 imgFragment[i][j] = new TextureRegion(imgShipsAtlas, j%4*100, j/4*100+i*400, 100, 100);
@@ -179,16 +176,16 @@ public class ScreenGame implements Screen {
             batch.draw(imgFragment[f.type][f.nFrag], f.getX(), f.getY(), f.width/2, f.height/2, f.width, f.height, 1, 1, f.rotation);
         }
         for (Enemy s: enemies) {
-            batch.draw(imgEnemy[s.phase], s.getX(), s.getY(), s.width, s.height);
+            batch.draw(imgShip[s.type][s.phase], s.getX(), s.getY(), s.width, s.height);
         }
         for (Shot s: shots) {
             batch.draw(imgShot, s.getX(), s.getY(), s.width, s.height);
         }
         if(ship.isAlive) {
-            batch.draw(imgShip[ship.phase], ship.getX(), ship.getY(), ship.width, ship.height);
+            batch.draw(imgShip[TYPE_SHIP][ship.phase], ship.getX(), ship.getY(), ship.width, ship.height);
         }
         for (int i = 0; i < ship.lives; i++) {
-            batch.draw(imgShip[0], SCR_WIDTH-90*(i+1), SCR_HEIGHT-90, 70, 70);
+            batch.draw(imgShip[TYPE_SHIP][0], SCR_WIDTH-90*(i+1), SCR_HEIGHT-90, 70, 70);
         }
         fontSmall.draw(batch,"Kills: "+kills, 20, SCR_HEIGHT-20);
         if(isGameOver) {
