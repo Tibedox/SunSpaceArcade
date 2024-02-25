@@ -20,6 +20,8 @@ public class SunSpaceArcade extends Game {
 	ScreenSettings screenSettings;
 	ScreenAbout screenAbout;
 	ScreenGame screenGame;
+
+	String playerName = "Player";
 	
 	@Override
 	public void create () {

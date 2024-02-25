@@ -9,6 +9,7 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector3;
@@ -36,7 +37,7 @@ public class ScreenGame implements Screen {
 
     Stars[] stars = new Stars[2];
     Ship ship;
-    int nShipLives = 3;
+    int nShipLives = 1;
     long timeShipKilled, timeShipRespawn = 3000;
     Array<Shot> shots = new Array<>();
     long timeLastShot, timeShotInterval = 700;
@@ -45,6 +46,7 @@ public class ScreenGame implements Screen {
     Array<Fragment> fragments = new Array<>();
     int nFragments = 55;
 
+    Player[] players = new Player[11];
     boolean isGameOver;
     int kills;
 
@@ -88,6 +90,10 @@ public class ScreenGame implements Screen {
         stars[1] = new Stars(SCR_HEIGHT);
 
         ship = new Ship();
+
+        for (int i = 0; i < players.length; i++) {
+            players[i] = new Player("Noname", 0);
+        }
     }
 
     @Override
@@ -185,6 +191,11 @@ public class ScreenGame implements Screen {
         fontSmall.draw(batch,"Kills: "+kills, 20, SCR_HEIGHT-20);
         if(isGameOver) {
             fontLarge.draw(batch, "Game Over", 0, SCR_HEIGHT / 4 * 3, SCR_WIDTH, Align.center, true);
+            for (int i = 0; i < players.length-1; i++) {
+                fontSmall.draw(batch, i+1+" "+players[i].name, 200, 1050-i*80);
+                String nPoints = amountPoints(fontSmall, i+1+" "+players[i].name, ""+players[i].score, SCR_WIDTH-400);
+                fontSmall.draw(batch, nPoints+players[i].score, 200, 1050-i*80, SCR_WIDTH-400, Align.right, true);
+            }
             btnBack.font.draw(batch, btnBack.text, btnBack.x, btnBack.y);
         }
         batch.end();
@@ -217,7 +228,7 @@ public class ScreenGame implements Screen {
         imgShot.dispose();
     }
 
-    void spawnShots(){
+    private void spawnShots(){
         if(TimeUtils.millis() > timeLastShot+timeShotInterval) {
             shots.add(new Shot(ship));
             timeLastShot = TimeUtils.millis();
@@ -225,33 +236,33 @@ public class ScreenGame implements Screen {
         }
     }
 
-    void spawnEnemies(){
+    private void spawnEnemies(){
         if(TimeUtils.millis() > timeLastEnemy+timeEnemyInterval) {
             enemies.add(new Enemy());
             timeLastEnemy = TimeUtils.millis();
         }
     }
 
-    void spawnFragments(SpaceObject object){
+    private void spawnFragments(SpaceObject object){
         sndExplosion.play();
         for (int i = 0; i < nFragments; i++) {
             fragments.add(new Fragment(object));
         }
     }
 
-    void killShip(){
+    private void killShip(){
         if(ship.isAlive) {
             timeShipKilled = TimeUtils.millis();
             spawnFragments(ship);
             ship.isAlive = false;
             ship.lives--;
             if(ship.lives == 0){
-                isGameOver = true;
+                gameOver();
             }
         }
     }
 
-    void respawnShip(){
+    private void respawnShip(){
         if(TimeUtils.millis()>timeShipKilled+timeShipRespawn && enemies.size==0 && !isGameOver){
             ship.isAlive = true;
             ship.x = SCR_WIDTH/2;
@@ -261,7 +272,14 @@ public class ScreenGame implements Screen {
         }
     }
 
-    void gameStart(){
+    private void gameOver(){
+        isGameOver = true;
+        players[players.length-1].name = sunSpaceArcade.playerName;
+        players[players.length-1].score = kills;
+        sortRecords();
+    }
+
+    private void gameStart(){
         isGameOver = false;
         kills = 0;
         enemies.clear();
@@ -269,5 +287,39 @@ public class ScreenGame implements Screen {
         fragments.clear();
         respawnShip();
         ship.lives = nShipLives;
+    }
+
+    private String amountPoints(BitmapFont font, String text1, String text2, float width) {
+        GlyphLayout layout1 = new GlyphLayout(font, text1);
+        GlyphLayout layout2 = new GlyphLayout(font, text2);
+        float pointsWidth = width-layout1.width-layout2.width;
+        GlyphLayout layoutPoint = new GlyphLayout(font, ".");
+        int amountPoints = (int) (pointsWidth/layoutPoint.width)/3;
+        String s = "";
+        for (int i = 0; i < amountPoints; i++) s +=".";
+        return s;
+    }
+
+    private void sortRecords(){
+        boolean flag = true;
+        while (flag){
+            flag = false;
+            for (int i = 0; i < players.length-1; i++) {
+                if(players[i].score<players[i+1].score){
+                    Player c = players[i];
+                    players[i] = players[i+1];
+                    players[i+1] = c;
+                    flag = true;
+                }
+            }
+        }
+    }
+
+    private void saveRecords(){
+
+    }
+
+    private void loadRecords(){
+
     }
 }
