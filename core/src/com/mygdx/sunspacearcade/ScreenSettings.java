@@ -17,7 +17,7 @@ public class ScreenSettings implements Screen {
     SpriteBatch batch;
     OrthographicCamera camera;
     Vector3 touch;
-    BitmapFont font;
+    BitmapFont fontLarge, fontSmall;
 
     Texture imgBackGround;
 
@@ -26,20 +26,26 @@ public class ScreenSettings implements Screen {
     SpaceButton btnClearRecords;
     SpaceButton btnBack;
 
+    InputKeyboard keyboard;
+    boolean isKeyboardUse;
+
     public ScreenSettings(SunSpaceArcade sunSpaceArcade) {
         this.sunSpaceArcade = sunSpaceArcade;
         batch = sunSpaceArcade.batch;
         camera = sunSpaceArcade.camera;
         touch = sunSpaceArcade.touch;
-        font = sunSpaceArcade.fontLarge;
+        fontLarge = sunSpaceArcade.fontLarge;
+        fontSmall = sunSpaceArcade.fontSmall;
 
         imgBackGround = new Texture("space3.png");
 
         loadSettings();
-        btnName = new SpaceButton("Name: "+sunSpaceArcade.playerName, 100, 1000, font);
-        btnSound = new SpaceButton(sunSpaceArcade.isSoundOn ? "Sound ON" : "Sound OFF", 100, 850, font);
-        btnClearRecords = new SpaceButton("Clear Records", 100, 700, font);
-        btnBack = new SpaceButton("Back", 100, 550, font);
+        btnName = new SpaceButton("Name: "+sunSpaceArcade.playerName, 100, 1000, fontLarge);
+        btnSound = new SpaceButton(sunSpaceArcade.isSoundOn ? "Sound ON" : "Sound OFF", 100, 850, fontLarge);
+        btnClearRecords = new SpaceButton("Clear Records", 100, 700, fontLarge);
+        btnBack = new SpaceButton("Back", 100, 550, fontLarge);
+
+        keyboard = new InputKeyboard(fontSmall, SCR_WIDTH, SCR_HEIGHT/2, 8);
     }
 
     @Override
@@ -54,19 +60,27 @@ public class ScreenSettings implements Screen {
             touch.set(Gdx.input.getX(), Gdx.input.getY(), 0);
             camera.unproject(touch);
 
-            if(btnName.hit(touch.x, touch.y)){
-                //sunSpaceArcade.setScreen(sunSpaceArcade.screenSettings);
-            }
-            if(btnSound.hit(touch.x, touch.y)){
-                sunSpaceArcade.isSoundOn = !sunSpaceArcade.isSoundOn;
-                btnSound.setText(sunSpaceArcade.isSoundOn ? "Sound ON" : "Sound OFF");
-            }
-            if(btnClearRecords.hit(touch.x, touch.y)){
-                sunSpaceArcade.screenGame.clearRecords();
-                btnClearRecords.setText("Records Cleared");
-            }
-            if(btnBack.hit(touch.x, touch.y)){
-                sunSpaceArcade.setScreen(sunSpaceArcade.screenMenu);
+            if(isKeyboardUse){
+                if (keyboard.endOfEdit(touch.x, touch.y)) {
+                    sunSpaceArcade.playerName = keyboard.getText();
+                    isKeyboardUse = false;
+                    btnName.setText("Name: "+sunSpaceArcade.playerName);
+                }
+            } else {
+                if (btnName.hit(touch.x, touch.y)) {
+                    isKeyboardUse = true;
+                }
+                if (btnSound.hit(touch.x, touch.y)) {
+                    sunSpaceArcade.isSoundOn = !sunSpaceArcade.isSoundOn;
+                    btnSound.setText(sunSpaceArcade.isSoundOn ? "Sound ON" : "Sound OFF");
+                }
+                if (btnClearRecords.hit(touch.x, touch.y)) {
+                    sunSpaceArcade.screenGame.clearRecords();
+                    btnClearRecords.setText("Records Cleared");
+                }
+                if (btnBack.hit(touch.x, touch.y)) {
+                    sunSpaceArcade.setScreen(sunSpaceArcade.screenMenu);
+                }
             }
         }
 
@@ -76,10 +90,13 @@ public class ScreenSettings implements Screen {
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
         batch.draw(imgBackGround, 0, 0, SCR_WIDTH, SCR_HEIGHT);
-        font.draw(batch, btnName.text, btnName.x, btnName.y);
-        font.draw(batch, btnSound.text, btnSound.x, btnSound.y);
-        font.draw(batch, btnClearRecords.text, btnClearRecords.x, btnClearRecords.y);
-        font.draw(batch, btnBack.text, btnBack.x, btnBack.y);
+        fontLarge.draw(batch, btnName.text, btnName.x, btnName.y);
+        fontLarge.draw(batch, btnSound.text, btnSound.x, btnSound.y);
+        fontLarge.draw(batch, btnClearRecords.text, btnClearRecords.x, btnClearRecords.y);
+        fontLarge.draw(batch, btnBack.text, btnBack.x, btnBack.y);
+        if(isKeyboardUse){
+            keyboard.draw(batch);
+        }
         batch.end();
     }
 
@@ -107,6 +124,7 @@ public class ScreenSettings implements Screen {
     @Override
     public void dispose() {
         imgBackGround.dispose();
+        keyboard.dispose();
     }
 
     private void saveSettings(){
