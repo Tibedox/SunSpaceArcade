@@ -234,7 +234,7 @@ public class ScreenGame implements Screen {
         if(TimeUtils.millis() > timeLastShot+timeShotInterval) {
             shots.add(new Shot(ship));
             timeLastShot = TimeUtils.millis();
-            sndShot.play(0.05f);
+            if(sunSpaceArcade.isSoundOn) sndShot.play(0.05f);
         }
     }
 
@@ -246,7 +246,7 @@ public class ScreenGame implements Screen {
     }
 
     private void spawnFragments(SpaceObject object){
-        sndExplosion.play();
+        if(sunSpaceArcade.isSoundOn) sndExplosion.play();
         for (int i = 0; i < nFragments; i++) {
             fragments.add(new Fragment(object));
         }
@@ -332,6 +332,13 @@ public class ScreenGame implements Screen {
         for (int i = 0; i < players.length; i++) {
             if(prefs.contains("name"+i)) players[i].name = prefs.getString("name"+i);
             if(prefs.contains("score"+i)) players[i].score = prefs.getInteger("score"+i);
+        }
+    }
+
+    public void clearRecords(){
+        for (int i = 0; i < players.length; i++) {
+            players[i].name = "Noname";
+            players[i].score = 0;
         }
     }
 }

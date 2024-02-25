@@ -4,6 +4,7 @@ import static com.mygdx.sunspacearcade.SunSpaceArcade.SCR_HEIGHT;
 import static com.mygdx.sunspacearcade.SunSpaceArcade.SCR_WIDTH;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -22,7 +23,7 @@ public class ScreenSettings implements Screen {
 
     SpaceButton btnName;
     SpaceButton btnSound;
-    SpaceButton btnMusic;
+    SpaceButton btnClearRecords;
     SpaceButton btnBack;
 
     public ScreenSettings(SunSpaceArcade sunSpaceArcade) {
@@ -34,10 +35,11 @@ public class ScreenSettings implements Screen {
 
         imgBackGround = new Texture("space3.png");
 
-        btnName = new SpaceButton("Name", 300, 1000, font);
-        btnSound = new SpaceButton("Sound ON", 300, 850, font);
-        btnMusic = new SpaceButton("Music ON", 300, 700, font);
-        btnBack = new SpaceButton("Back", 300, 550, font);
+        loadSettings();
+        btnName = new SpaceButton("Name: "+sunSpaceArcade.playerName, 100, 1000, font);
+        btnSound = new SpaceButton(sunSpaceArcade.isSoundOn ? "Sound ON" : "Sound OFF", 100, 850, font);
+        btnClearRecords = new SpaceButton("Clear Records", 100, 700, font);
+        btnBack = new SpaceButton("Back", 100, 550, font);
     }
 
     @Override
@@ -56,10 +58,12 @@ public class ScreenSettings implements Screen {
                 //sunSpaceArcade.setScreen(sunSpaceArcade.screenSettings);
             }
             if(btnSound.hit(touch.x, touch.y)){
-                //sunSpaceArcade.setScreen(sunSpaceArcade.screenSettings);
+                sunSpaceArcade.isSoundOn = !sunSpaceArcade.isSoundOn;
+                btnSound.setText(sunSpaceArcade.isSoundOn ? "Sound ON" : "Sound OFF");
             }
-            if(btnMusic.hit(touch.x, touch.y)){
-                //sunSpaceArcade.setScreen(sunSpaceArcade.screenSettings);
+            if(btnClearRecords.hit(touch.x, touch.y)){
+                sunSpaceArcade.screenGame.clearRecords();
+                btnClearRecords.setText("Records Cleared");
             }
             if(btnBack.hit(touch.x, touch.y)){
                 sunSpaceArcade.setScreen(sunSpaceArcade.screenMenu);
@@ -74,7 +78,7 @@ public class ScreenSettings implements Screen {
         batch.draw(imgBackGround, 0, 0, SCR_WIDTH, SCR_HEIGHT);
         font.draw(batch, btnName.text, btnName.x, btnName.y);
         font.draw(batch, btnSound.text, btnSound.x, btnSound.y);
-        font.draw(batch, btnMusic.text, btnMusic.x, btnMusic.y);
+        font.draw(batch, btnClearRecords.text, btnClearRecords.x, btnClearRecords.y);
         font.draw(batch, btnBack.text, btnBack.x, btnBack.y);
         batch.end();
     }
@@ -96,11 +100,25 @@ public class ScreenSettings implements Screen {
 
     @Override
     public void hide() {
-
+        btnClearRecords.setText("Clear Records");
+        saveSettings();
     }
 
     @Override
     public void dispose() {
         imgBackGround.dispose();
+    }
+
+    private void saveSettings(){
+        Preferences prefs = Gdx.app.getPreferences("SunArcadeSettings");
+        prefs.putBoolean("sound", sunSpaceArcade.isSoundOn);
+        prefs.putString("name", sunSpaceArcade.playerName);
+        prefs.flush();
+    }
+
+    private void loadSettings(){
+        Preferences prefs = Gdx.app.getPreferences("SunArcadeSettings");
+        if(prefs.contains("sound")) sunSpaceArcade.isSoundOn = prefs.getBoolean("sound");
+        if(prefs.contains("name")) sunSpaceArcade.playerName = prefs.getString("name");
     }
 }

@@ -22,6 +22,7 @@ public class SunSpaceArcade extends Game {
 	ScreenGame screenGame;
 
 	String playerName = "Player";
+	boolean isSoundOn = true;
 	
 	@Override
 	public void create () {
