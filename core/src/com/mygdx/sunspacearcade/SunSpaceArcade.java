@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.Vector3;
 public class SunSpaceArcade extends Game {
 	public static final float SCR_WIDTH = 900, SCR_HEIGHT = 1600;
 	public static final int TYPE_SHIP = 0, TYPE_ENEMY1 = 1, TYPE_ENEMY2 = 2, TYPE_ENEMY3 = 3, TYPE_ENEMY4 = 4;
+	public static float SPEED_GAME = 0;
 
 	SpriteBatch batch;
 	OrthographicCamera camera;

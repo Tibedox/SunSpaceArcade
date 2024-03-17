@@ -2,6 +2,7 @@ package com.mygdx.sunspacearcade;
 
 import static com.mygdx.sunspacearcade.SunSpaceArcade.SCR_HEIGHT;
 import static com.mygdx.sunspacearcade.SunSpaceArcade.SCR_WIDTH;
+import static com.mygdx.sunspacearcade.SunSpaceArcade.SPEED_GAME;
 import static com.mygdx.sunspacearcade.SunSpaceArcade.TYPE_SHIP;
 
 import com.badlogic.gdx.Gdx;
@@ -40,13 +41,16 @@ public class ScreenGame implements Screen {
     Stars[] stars = new Stars[2];
     Ship ship;
     int nShipLives = 3;
-    long timeShipKilled, timeShipRespawn = 3000;
+
     Array<Shot> shots = new Array<>();
-    long timeLastShot, timeShotInterval = 700;
     Array<Enemy> enemies = new Array<>();
-    long timeLastEnemy, timeEnemyInterval = 1500;
     Array<Fragment> fragments = new Array<>();
     int nFragments = 55;
+
+    long timeShipKilled, timeShipRespawn = 3000;
+    long timeLastShot, timeShotInterval = 700;
+    long timeLastEnemy, timeEnemyInterval = 1500;
+    long timeLastIncreaseSpeed, timeIncreaseSpeedInterval = 1000;
 
     Player[] players = new Player[11];
     boolean isGameOver;
@@ -127,6 +131,7 @@ public class ScreenGame implements Screen {
             spawnEnemies();
             spawnShots();
             ship.move();
+            increaseSpeedGame();
         } else {
             respawnShip();
         }
@@ -150,7 +155,7 @@ public class ScreenGame implements Screen {
                 continue;
             }
             for (int j = 0; j < enemies.size; j++) {
-                if (shots.get(i).overlap(enemies.get(j))){
+                if (shots.get(i).overlap(enemies.get(j)) & shots.get(i).y<SCR_HEIGHT-shots.get(i).width/2){
                     spawnFragments(enemies.get(j));
                     shots.removeIndex(i);
                     enemies.removeIndex(j);
@@ -268,6 +273,14 @@ public class ScreenGame implements Screen {
             ship.y = SCR_HEIGHT/12;
             ship.vx = 0;
             ship.vy = 0;
+        }
+    }
+
+    private void increaseSpeedGame(){
+        if(TimeUtils.millis() > timeLastIncreaseSpeed+timeIncreaseSpeedInterval){
+            timeLastIncreaseSpeed = TimeUtils.millis();
+            SPEED_GAME -= 0.05f;
+            if(timeEnemyInterval>timeShotInterval) timeEnemyInterval -= 10;
         }
     }
 
