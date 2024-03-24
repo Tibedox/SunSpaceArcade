@@ -9,7 +9,7 @@ public class Enemy extends SpaceObject{
         width = height = 200;
         x = MathUtils.random(width/2, SCR_WIDTH-width/2);
         y = MathUtils.random(SCR_HEIGHT+height, SCR_HEIGHT*2);
-        vy = MathUtils.random(-7f, -4f)+SPEED_GAME;
+        vy = MathUtils.random(-7f, -4f)+speedGame;
     }
 
     @Override

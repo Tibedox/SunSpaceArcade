@@ -1,9 +1,6 @@
 package com.mygdx.sunspacearcade;
 
-import static com.mygdx.sunspacearcade.SunSpaceArcade.SCR_HEIGHT;
-import static com.mygdx.sunspacearcade.SunSpaceArcade.SCR_WIDTH;
-import static com.mygdx.sunspacearcade.SunSpaceArcade.SPEED_GAME;
-import static com.mygdx.sunspacearcade.SunSpaceArcade.TYPE_SHIP;
+import static com.mygdx.sunspacearcade.SunSpaceArcade.*;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
@@ -36,11 +33,13 @@ public class ScreenGame implements Screen {
     Sound sndShot;
     Sound sndExplosion;
 
+    SpaceButton btnSwitchRecords;
     SpaceButton btnBack;
+    boolean isGlobalRecords;
 
     Stars[] stars = new Stars[2];
     Ship ship;
-    int nShipLives = 3;
+    int nShipLives = 1;
 
     Array<Shot> shots = new Array<>();
     Array<Enemy> enemies = new Array<>();
@@ -86,7 +85,8 @@ public class ScreenGame implements Screen {
             }
         }
 
-        btnBack = new SpaceButton("back to menu", SCR_HEIGHT/10, fontSmall);
+        btnSwitchRecords = new SpaceButton("Global/Local Records", 280, fontSmall);
+        btnBack = new SpaceButton("back to menu", 200, fontSmall);
 
         stars[0] = new Stars(0);
         stars[1] = new Stars(SCR_HEIGHT);
@@ -116,11 +116,18 @@ public class ScreenGame implements Screen {
             touch.set(Gdx.input.getX(), Gdx.input.getY(), 0);
             camera.unproject(touch);
 
+            ship.touchScreen(touch.x);
+        }
+        if(Gdx.input.justTouched()){
+            touch.set(Gdx.input.getX(), Gdx.input.getY(), 0);
+            camera.unproject(touch);
+
+            if(isGameOver & btnSwitchRecords.hit(touch.x, touch.y)){
+                isGlobalRecords = !isGlobalRecords;
+            }
             if(isGameOver & btnBack.hit(touch.x, touch.y)){
                 sunSpaceArcade.setScreen(sunSpaceArcade.screenMenu);
             }
-
-            ship.touchScreen(touch.x);
         }
 
         // события
@@ -174,8 +181,8 @@ public class ScreenGame implements Screen {
         // отрисовка
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
-        for (int i = 0; i < stars.length; i++) {
-            batch.draw(imgBackGround, stars[i].x, stars[i].y, stars[i].width, stars[i].height);
+        for (Stars star : stars) {
+            batch.draw(imgBackGround, star.x, star.y, star.width, star.height);
         }
         for(Fragment f: fragments){
             batch.draw(imgFragment[f.type][f.nFrag], f.getX(), f.getY(), f.width/2, f.height/2, f.width, f.height, 1, 1, f.rotation);
@@ -194,12 +201,18 @@ public class ScreenGame implements Screen {
         }
         fontSmall.draw(batch,"Kills: "+kills, 20, SCR_HEIGHT-20);
         if(isGameOver) {
-            fontLarge.draw(batch, "Game Over", 0, SCR_HEIGHT / 4 * 3, SCR_WIDTH, Align.center, true);
-            for (int i = 0; i < players.length-1; i++) {
-                fontSmall.draw(batch, i+1+" "+players[i].name, 200, 1050-i*80);
-                String nPoints = amountPoints(fontSmall, i+1+" "+players[i].name, ""+players[i].score, SCR_WIDTH-400);
-                fontSmall.draw(batch, nPoints+players[i].score, 200, 1050-i*80, SCR_WIDTH-400, Align.right, true);
+            fontLarge.draw(batch, "Game Over", 0, 1350, SCR_WIDTH, Align.center, true);
+            if(isGlobalRecords) {
+                fontSmall.draw(batch, "Global Records", 0, 1200, SCR_WIDTH, Align.center, true);
+            } else {
+                fontSmall.draw(batch, "Local Records", 0, 1200, SCR_WIDTH, Align.center, true);
+                for (int i = 0; i < players.length - 1; i++) {
+                    fontSmall.draw(batch, i + 1 + " " + players[i].name, 200, 1100 - i * 80);
+                    String nPoints = amountPoints(fontSmall, i + 1 + " " + players[i].name, "" + players[i].score, SCR_WIDTH - 400);
+                    fontSmall.draw(batch, nPoints + players[i].score, 200, 1100 - i * 80, SCR_WIDTH - 400, Align.right, true);
+                }
             }
+            btnSwitchRecords.font.draw(batch, btnSwitchRecords.text, btnSwitchRecords.x, btnSwitchRecords.y);
             btnBack.font.draw(batch, btnBack.text, btnBack.x, btnBack.y);
         }
         batch.end();
@@ -279,7 +292,7 @@ public class ScreenGame implements Screen {
     private void increaseSpeedGame(){
         if(TimeUtils.millis() > timeLastIncreaseSpeed+timeIncreaseSpeedInterval){
             timeLastIncreaseSpeed = TimeUtils.millis();
-            SPEED_GAME -= 0.05f;
+            speedGame -= 0.5f;
             if(timeEnemyInterval>timeShotInterval) timeEnemyInterval -= 10;
         }
     }
