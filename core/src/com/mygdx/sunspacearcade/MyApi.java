@@ -20,4 +20,5 @@ public interface MyApi {
     @FormUrlEncoded
     @POST("/arcade.php")
     Call<List<RecordFromDB>> readData();
+
 }
