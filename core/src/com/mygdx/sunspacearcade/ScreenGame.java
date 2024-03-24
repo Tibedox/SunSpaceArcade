@@ -17,6 +17,16 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
 public class ScreenGame implements Screen {
     SunSpaceArcade sunSpaceArcade;
     SpriteBatch batch;
@@ -51,6 +61,7 @@ public class ScreenGame implements Screen {
     long timeLastEnemy, timeEnemyInterval = 1500;
     long timeLastIncreaseSpeed, timeIncreaseSpeedInterval = 1000;
 
+    List<RecordFromDB> recordsFromDB = new ArrayList<>();
     Player[] players = new Player[11];
     boolean isGameOver;
     int kills;
@@ -204,6 +215,11 @@ public class ScreenGame implements Screen {
             fontLarge.draw(batch, "Game Over", 0, 1350, SCR_WIDTH, Align.center, true);
             if(isGlobalRecords) {
                 fontSmall.draw(batch, "Global Records", 0, 1200, SCR_WIDTH, Align.center, true);
+                for (int i = 0; i < players.length - 1; i++) {
+                    fontSmall.draw(batch, i + 1 + " " + recordsFromDB.get(i).name, 200, 1100 - i * 80);
+                    String nPoints = amountPoints(fontSmall, i + 1 + " " + recordsFromDB.get(i).name, "" + recordsFromDB.get(i).score, SCR_WIDTH - 400);
+                    fontSmall.draw(batch, nPoints + recordsFromDB.get(i).score, 200, 1100 - i * 80, SCR_WIDTH - 400, Align.right, true);
+                }
             } else {
                 fontSmall.draw(batch, "Local Records", 0, 1200, SCR_WIDTH, Align.center, true);
                 for (int i = 0; i < players.length - 1; i++) {
@@ -303,6 +319,7 @@ public class ScreenGame implements Screen {
         players[players.length-1].score = kills;
         sortRecords();
         saveRecords();
+        saveRecordsToDB();
     }
 
     private void gameStart(){
@@ -313,6 +330,8 @@ public class ScreenGame implements Screen {
         fragments.clear();
         respawnShip();
         ship.lives = nShipLives;
+        speedGame = 0;
+        isGlobalRecords = false;
     }
 
     private String amountPoints(BitmapFont font, String text1, String text2, float width) {
@@ -341,6 +360,21 @@ public class ScreenGame implements Screen {
         }
     }
 
+    private void sortRecords2(){
+        boolean flag = true;
+        while (flag){
+            flag = false;
+            for (int i = 0; i < recordsFromDB.size()-1; i++) {
+                if(recordsFromDB.get(i).score<recordsFromDB.get(i+1).score){
+                    RecordFromDB c = recordsFromDB.get(i);
+                    recordsFromDB.set(i, recordsFromDB.get(i+1));
+                    recordsFromDB.set(i+1, c);
+                    flag = true;
+                }
+            }
+        }
+    }
+
     private void saveRecords(){
         Preferences prefs = Gdx.app.getPreferences("SunArcadeRecords");
         for (int i = 0; i < players.length; i++) {
@@ -363,5 +397,33 @@ public class ScreenGame implements Screen {
             players[i].name = "Noname";
             players[i].score = 0;
         }
+    }
+
+    void saveRecordsToDB(){
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://sun.sch120.ru")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        MyApi myApi = retrofit.create(MyApi.class);
+        /*
+        // синхронный запрос
+        try {
+            Response<List<RecordFromDB>> response = myApi.sendData(sunSpaceArcade.playerName, kills).execute();
+            recordsFromDB = response.body();
+        } catch (IOException e) {// если не получилось
+        }*/
+        // асинхронный запрос
+        myApi.sendData(sunSpaceArcade.playerName, kills).enqueue(new Callback<List<RecordFromDB>>() {
+            @Override
+            public void onResponse(Call<List<RecordFromDB>> call, Response<List<RecordFromDB>> response) {
+                recordsFromDB = response.body();
+                sortRecords2();
+            }
+
+            @Override
+            public void onFailure(Call<List<RecordFromDB>> call, Throwable t) {
+
+            }
+        });
     }
 }
