@@ -49,7 +49,7 @@ public class ScreenGame implements Screen {
 
     Stars[] stars = new Stars[2];
     Ship ship;
-    int nShipLives = 1;
+    int nShipLives = 5;
 
     Array<Shot> shots = new Array<>();
     Array<Enemy> enemies = new Array<>();
@@ -147,7 +147,7 @@ public class ScreenGame implements Screen {
         }
         if(ship.isAlive) {
             spawnEnemies();
-            spawnShots();
+            //spawnShots();
             ship.move();
             increaseSpeedGame();
         } else {
@@ -155,6 +155,7 @@ public class ScreenGame implements Screen {
         }
         for (int i = 0; i < enemies.size; i++) {
             enemies.get(i).move();
+            enemies.get(i).changeAngle(ship);
             if (enemies.get(i).outOfScreen()){
                 enemies.removeIndex(i);
                 killShip();
@@ -199,7 +200,7 @@ public class ScreenGame implements Screen {
             batch.draw(imgFragment[f.type][f.nFrag], f.getX(), f.getY(), f.width/2, f.height/2, f.width, f.height, 1, 1, f.rotation);
         }
         for (Enemy s: enemies) {
-            batch.draw(imgShip[s.type][s.phase], s.getX(), s.getY(), s.width, s.height);
+            batch.draw(imgShip[s.type][s.phase], s.getX(), s.getY(), s.width/2, s.height/2, s.width, s.height, 1, 1, s.rotation);
         }
         for (Shot s: shots) {
             batch.draw(imgShot, s.getX(), s.getY(), s.width, s.height);
