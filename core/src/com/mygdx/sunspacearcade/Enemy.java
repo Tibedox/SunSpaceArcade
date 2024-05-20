@@ -29,19 +29,20 @@ public class Enemy extends SpaceObject{
     }
 
     void spawn() {
-        x = MathUtils.random(0, SCR_WIDTH);
-        y = MathUtils.random(SCR_HEIGHT/4*3, SCR_HEIGHT);
-        v = MathUtils.random(3f, 5f);
+        x = MathUtils.random(0+width/2, SCR_WIDTH-width/2);
+        y = MathUtils.random(SCR_HEIGHT*1.5f, SCR_HEIGHT*2);
+        /*v = MathUtils.random(5f, 8f);
         a = MathUtils.atan((xB-x)/(y-yB));
         rotation = a*MathUtils.radiansToDegrees;
         vx = MathUtils.sin(a)*v;
-        vy = -MathUtils.cos(a)*v;
+        vy = -MathUtils.cos(a)*v;*/
     }
 
     void changeAngle(Ship ship) {
-        a = MathUtils.atan((ship.x-x)/(y-ship.y));
-        rotation = a*MathUtils.radiansToDegrees;
-        vx = MathUtils.sin(a)*v;
-        vy = -MathUtils.cos(a)*v;
+        if(y<SCR_HEIGHT/3) {
+            rotation = MathUtils.atan2(ship.x-x, y-ship.y) * MathUtils.radiansToDegrees;
+            vx = MathUtils.sin(a) * v;
+            vy = -MathUtils.cos(a) * v;
+        }
     }
 }

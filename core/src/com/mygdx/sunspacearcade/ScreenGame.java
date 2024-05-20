@@ -43,13 +43,14 @@ public class ScreenGame implements Screen {
     Sound sndShot;
     Sound sndExplosion;
 
+
     SpaceButton btnSwitchRecords;
     SpaceButton btnBack;
     boolean isGlobalRecords;
 
     Stars[] stars = new Stars[2];
     Ship ship;
-    int nShipLives = 5;
+    int nShipLives = 4;
 
     Array<Shot> shots = new Array<>();
     Array<Enemy> enemies = new Array<>();
@@ -57,7 +58,7 @@ public class ScreenGame implements Screen {
     int nFragments = 55;
 
     long timeShipKilled, timeShipRespawn = 3000;
-    long timeLastShot, timeShotInterval = 700;
+    long timeLastShot, timeShotInterval = 1000;
     long timeLastEnemy, timeEnemyInterval = 1500;
     long timeLastIncreaseSpeed, timeIncreaseSpeedInterval = 1000;
 
@@ -147,7 +148,7 @@ public class ScreenGame implements Screen {
         }
         if(ship.isAlive) {
             spawnEnemies();
-            //spawnShots();
+            spawnShots();
             ship.move();
             increaseSpeedGame();
         } else {
@@ -155,7 +156,7 @@ public class ScreenGame implements Screen {
         }
         for (int i = 0; i < enemies.size; i++) {
             enemies.get(i).move();
-            enemies.get(i).changeAngle(ship);
+            //enemies.get(i).changeAngle(ship);
             if (enemies.get(i).outOfScreen()){
                 enemies.removeIndex(i);
                 killShip();
